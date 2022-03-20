@@ -1,0 +1,9 @@
+- name: gitインストール
+  yum:
+    name: git
+    state: latest
+
+- name: treeインストール
+  yum:
+    name: tree
+    state: latest

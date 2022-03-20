@@ -1,0 +1,20 @@
+- name: apacheのインストール
+  yum: 
+    name: httpd
+    state: latest
+
+- name: apache起動
+  service: 
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: チェック
+  shell: ps -aux | grep httpd
+  register: yum_check
+
+- name: 実行結果
+  debug:
+    msg: "{{ yum_check }}"
+  
+  

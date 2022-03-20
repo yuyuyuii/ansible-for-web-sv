@@ -1,0 +1,35 @@
+- name: zabbix agentのインストールパス存在確認
+  stat:
+    path: '/etc/yum.repos.d/zabbix.repo'
+  register: is_zabbix_repo
+
+- name: debug
+  debug:
+    var: is_zabbix_repo
+
+- name: zabbix agentのレポジトリインストール
+  shell: rpm -Uvh https://repo.zabbix.com/zabbix/5.0/rhel/8/x86_64/zabbix-release-5.0-1.el8.noarch.rpm
+  when: is_zabbix_repo.stat.exists == false
+
+- name: zabbix agentのインストール
+  yum:
+    name: zabbix-agent
+
+# Copy Configure
+- name: Copy zabbix-agent Config
+  template:	
+    src: "{{ item }}.j2"
+    dest: "/etc/zabbix/{{ item }}"
+  with_items: "zabbix_agentd.conf"
+
+# zabbix agentの起動とか
+- name: zabbix agentの起動
+  yum:
+    name: zabbix-agent
+    state: present #最初にインストールしたやつが入っていること
+
+- name: zabbix-agentの自動起動
+  service: 
+    name: zabbix-agent
+    state: started
+    enabled: yes

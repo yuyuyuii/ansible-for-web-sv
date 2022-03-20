@@ -1,0 +1,25 @@
+# ユーザ情報を記載する
+# ユーザを追加したい場合はadd_usersに記載
+# ユーザを作押したい場合はdel_usersに記載
+
+add_users:
+  - name: 'my' # ユーザ名
+    uid: 1000 # uidを指定
+    groups: wheel # サブグループの設定
+    password: "{{ 'soad@090'|password_hash('sha512') }}" #ハッシュ化したパスワードを設定する必要あり
+    public_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCm7yahIDeAyPuUNsaAQTzT13chxyFO/3cav3jVGgL6vO4X8bfuUUxeNXancAQioGzU5qIBviC5HJxxoG+7aSrrLG8CB3iy8+HvQbaD2aBz28dCY9XmArFQs3NnjYvm8nY/4+Q7AcKev+2NLZ4bgKNQUrdVbayRafzYM9uBxrjbnI5UFjGDKofi2wmo3HxI2oVvbm92R8dDGB8avpwKhdpOW5TkVmIOkBj9kiJzIwv8YWKB6fGto8dto/CdZUWsKWPnDPWAno2xjmPdbzQwTW7d6bnqCzI9ilhIlzeC5mHc95ItAB0xnqvBV76mNDWy9wE6uWRuiRKr+73krDh84X6jmaedayuuki@ymaeda.local'
+
+  # - name: 'user02' # ユーザ名
+  #   uid: 1001 # uidを指定
+  #   groups: wheel # サブグループの設定
+  #   password: "{{ 'user02'|password_hash('sha512') }}" #ハッシュ化したパスワードを設定する必要あり
+  #   public_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHGHa+l6ioxefTSyJvfBvMiDdVSG5ZpyjDNMEw2pu++DLs4vW1bjo410s    WQDDXzaGvOkikScUu4JRXCDnCeyxNaWDctSiSMpak23Y7yeICEPf5OMCqXPdnSw6nEOrxMJDGLTbuBOtUy/lyGVKTaq0cko    u3X075WCmjZfozwsYHDTbOl8lMb9kbHYl4jVq6jvkK48zsFGwobjH93hPuqjgOPr0d5i4dlJ7Yh0JlF6kkGtUHm9Z8/jlET    Ze+xKpJrjAgpCagAXIH6myABxX3g9aaENRatAPaXUWUo3d4j9myvY9DDtOqaNL9ePTCpH2psP6pqv/PmWCf7ljctlVZa5At'
+
+  # - name: 'user03' # ユーザ名
+  #   uid: 1003 # uidを指定
+  #   groups: wheel # サブグループの設定
+  #   password: "{{ 'user03'|password_hash('sha512') }}" #ハッシュ化したパスワードを設定する必要あり
+    # public_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCm7yahIDeAyPuUNsaAQTzT13chxyFO/3cav3jVGgL6vO4X8bfuUUxeNXancAQioGzU5qIBviC5HJxxoG+7aSrrLG8CB3iy8+HvQbaD2aBz28dCY9XmArFQs3NnjYvm8nY/4+Q7AcKev+2NLZ4bgKNQUrdVbayRafzYM9uBxrjbnI5UFjGDKofi2wmo3HxI2oVvbm92R8dDGB8avpwKhdpOW5TkVmIOkBj9kiJzIwv8YWKB6fGto8dto/CdZUWsKWPnDPWAno2xjmPdbzQwTW7d6bnqCzI9ilhIlzeC5mHc95ItAB0xnqvBV76mNDWy9wE6uWRuiRKr+73krDh84X6jmaedayuuki@ymaeda.local'
+
+# del_users:
+#   - name: 'user02'

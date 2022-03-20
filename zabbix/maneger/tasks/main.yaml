@@ -1,0 +1,197 @@
+# - name: zabbix agentのインストールパス存在確認
+#   stat:
+#     path: '/etc/yum.repos.d/zabbix.repo'
+#   register: is_zabbix_repo
+
+# - name: debug
+#   debug:
+#     var: is_zabbix_repo
+
+# - name: zabbix agentのレポジトリインストール
+#   shell:   
+#   when: is_zabbix_repo.stat.exists == false
+
+# - name: zabbix agentのインストール
+#   yum:
+#     name: zabbix-agent
+
+# # Copy Configure
+# - name: Copy zabbix-agent Config
+    # template:
+#     src: "{{ item }}.j2"
+#     dest: "/etc/zabbix/{{ item }}"
+#   with_items: "zabbix_agentd.conf"
+
+# # zabbix agentの起動とか
+# - name: zabbix agentの起動
+#   yum:
+#     name: zabbix-agent
+#     state: present #最初にインストールしたやつが入っていること
+
+# - name: zabbix-agentの自動起動
+#   service: 
+#     name: zabbix-agent
+#     state: started
+#     enabled: yes
+
+# - name: mysqlをインストール
+#   yum:
+#     name: "{{ item.name }}"
+#     state: "{{ item.state }}"
+#   with_items:
+#     - 
+
+- name: download epel-release, remi, mysql repositorys
+  yum:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+  with_items:
+      - name: 'epel-release'
+        state: 'present'
+      - name: 'http://rpms.famillecollet.com/enterprise/remi-release-7.rpm'
+        state: 'present'
+
+# - name: copy remi.repo
+#   template:
+#     src: "{{ item }}.j2"
+#     dest: "/etc/yum.repos.d/{{ item }}"
+#   with_items: 'remi.repo'
+
+# - name: copy remi-php72.repo
+#   template:
+#     src: '{{ item }}.j2'
+#     dest: '/etc/yum.repos.d/{{ item }}'
+#   with_items: 'remi-php72.repo'
+
+- name: import remi gpg-key
+  rpm_key:
+    state: present
+    key: http://rpms.famillecollet.com/RPM-GPG-KEY-remi
+
+- name: delete mariadb
+  yum:
+    name: mariadb-libs
+    state: removed
+
+# - name: install mysql
+#   yum:
+#     name: "{{ item }}"
+    # state: present
+  # with_items:
+  #   - mysql-server
+  #   - mysql-devel
+  #   - MySQL-python
+- name: install mysql repository
+  # shell: rpm -ivh 
+    # validate_certs: yes
+  # template:
+  #   src: '{{ item }}.j2'
+  #   dest: '/etc/yum.repos.d/{{ item }}'
+  # with_items: 'mysql-community.repo'
+  yum:
+    name: '{{ item.name }}'
+    state: '{{ item.state }}'
+  with_items:
+      - name: 'yum-utils'
+        state: 'present'
+      - name: 'https://dev.mysql.com/get/mysql80-community-release-el7-5.noarch.rpm'
+        state: 'present'
+      - name: 'MySQL-python'
+        state: 'present'  
+      # - name: 'mariadb-server'
+      #   state: 'present'
+
+###########################
+# mysqlがinstallできん
+###########################
+# - name: copy my.cnf
+#   template:
+#     src: '{{ item }}.j2'
+#     dest: '/etc/{{ item }}'
+#     mode: 0644
+#   with_items: 'my.cnf'
+
+- name: install zabbix db
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - zabbix50-server
+      # - zabbix50-web
+      # - zabbix-web-japanese
+      # - zabbix-agent
+      # - zabbix-get
+
+- name: enable mysql
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
+
+
+- name: get root password
+  shell: "grep 'A temporary password is generated for root@localhost' /var/log/mysqld.log | awk -F ' ' '{print $(NF)}'"
+  register: root_password
+
+- name: debug
+  debug:
+    var: root_password
+
+# - name: update expired root user password
+#   command: mysql --user root --password="" --connect-expired-password --execute='ALTER USER "root"@"localhost" IDENTIFIED BY "{{ DB_PASS }}";'
+
+# - name: create mysql client user
+#   mysql_user:
+#     name: zabbix
+#     password: zabbix
+#     priv: "*.*:ALL,GRANT"
+#     host: localhost
+#     state: present
+#     login_user: root
+#     login_password: root
+- name: zabbix agentのインストールパス存在確認
+  stat:
+    path: '/etc/yum.repos.d/zabbix.repo'
+  register: is_zabbix_repo
+
+- name: download zabbix 5.0 repo
+  shell: rpm -Uvh https://repo.zabbix.com/zabbix/5.0/rhel/8/x86_64/zabbix-release-5.0-1.el8.noarch.rpm
+  when: is_zabbix_repo.stat.exists == false
+
+  # state: present
+
+- name: install zabbix 5.0
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - zabbix50-server
+      # - zabbix-web-mysql
+      # - zabbix-web-japanese
+      # - zabbix-agent
+      # - zabbix-get
+
+# - name: create db for zabbix
+#   shell: |
+#     mysql -u root -p root < /etc/ansible/roles/zabbix-server/files/CreateDB.sql
+#     cd /usr/share/doc/zabbix-server-mysql-4*
+#     zcat create.sql.gz | mysql -u zabbix -p"{{ DB_PASS }}" zabbix
+
+# - name: copy config files of zabbix
+#   copy: src="{{ item.src}}" dest="{{ item.dest }}" mode="{{ item.mode }}"
+#   with_items:
+#       - { src: 'zabbix_server.conf', dest: '/etc/zabbix/zabbix_server.conf', mode: '0640' }
+#       - { src: 'zabbix.conf', dest: '/etc/httpd/conf.d/zabbix.conf', mode: '0644' }
+#       - { src: 'php.ini', dest: '/etc/php.ini', mode: '0644' }
+
+- name: Start zabbix_server, zabbix_agent, httpd service start
+  service:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    enabled: "{{ item.enabled }}"
+  with_items:
+      - name: 'zabbix-server'
+        state: 'started'
+        enabled: 'yes'
+      # - { name: 'httpd', state: 'started', enabled: 'yes' }
+      # - { name: 'zabbix-agent', state: 'started', enabled: 'yes' }

@@ -1,0 +1,30 @@
+# Playbook main.ymlで実行するユーザー関連の変更
+#
+#  vars
+#    - add_users: 追加するユーザ
+#    - del_users: 削除するユーザ
+#    - add_groups: 追加するグループ
+#
+#
+#    注意
+#      - ユーザ削除時には、delete_usersに追加するだけではなく、add_usersからの削除も行う。
+#        特に影響はでないが、無駄に作成と削除するのは好ましくない。
+#
+- hosts: all
+  become: true
+  roles: 
+    - user # userディレクトリ配下のタスクを実行
+    - apache # apacheディレクトリ配下のタスクを実行
+    - common # 共通でインストールするやつ
+    - zabbix/agent
+
+# - hosts: agent
+#   become: true
+#   roles:
+#     - zabbix/agent
+
+# - hosts: maneger
+#   become: true
+#   roles:
+#     - zabbix/maneger
+

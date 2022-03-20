@@ -1,0 +1,25 @@
+# ユーザの作成や削除を実行するタスク
+# ユーザ情報の定義はvars/main.ymlに記載する
+
+- name: ユーザを追加
+  user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    groups: "{{ item.groups}}"
+  with_items: "{{ add_users }}"
+
+# 今回は、追加するユーザ = SSHで接続可能とする。よって変数は、「ユーザを追加」と同じ物を利用
+# - name: 公開鍵の追加
+#   authorized_key:
+#     user: "{{ item.name }}"
+#     key: "{{ item.public_key }}"
+#   with_items:  "{{ add_users }}"
+
+# 今回は、削除対象のホームディレクトリごと削除するものとする
+# - name: ユーザを削除
+#   user:
+#     name: "{{ item.name }}"
+#     state: absent
+#     remove: yes
+#   with_items: "{{ del_users }}"
+
