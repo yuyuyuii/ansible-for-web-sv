@@ -42,9 +42,16 @@
 
 ## db-[99:101]-node.example.com
 
+# ansibleを使用してinstallしたいサーバの情報を記入する。んで、ローカルで実行する
+# ansibleがインストールされた端末でyamlファイルとか作成しているディレクトリに移動後、以下のコマンドを実行
+# ansible-playbook -i hosts main.yaml
+
 [agent]
-sakura ansible_host=160.16.71.46 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=miso=2021
+# IPは適宜変更する。さくらやAWSで立てたサーバのIPアドレスとログインユーザ名とパスワード
+# ZabbixのAgentをインストールするwebサーバ
+sakura ansible_host=160.16.114.190 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=O571o571
 
 [maneger]
+# Zabbixのマネージャーをインストールするサーバ
 zb_sakura ansible_host=160.16.201.217 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=miso=2021
-; ask_pass = True
+# ask_pass = True
